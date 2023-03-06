@@ -8,11 +8,11 @@ namespace MyMicroservice.Handlers
 {
     public class CreateStockHandler: IRequestHandler<CreateStockCommand, Stock>
     {
-        private readonly IStockRepository _stockRepository;
+        private readonly IStockRepository _itemRepository;
 
-        public CreateStockHandler(IStockRepository productRepository)
+        public CreateStockHandler(IStockRepository itemRepository)
         {
-            _stockRepository = productRepository;
+            _itemRepository = itemRepository;
         }
         public async Task<Stock> Handle(CreateStockCommand command, CancellationToken cancellationToken)
         {
@@ -24,7 +24,7 @@ namespace MyMicroservice.Handlers
                 CreatedTimestamp = DateTime.Now
             };
 
-            return await _stockRepository.AddAsync(stock);
+            return await _itemRepository.AddAsync(stock);
         }
     }
 }

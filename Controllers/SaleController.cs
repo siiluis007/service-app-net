@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyMicroservice.Commands;
 using MyMicroservice.Queries;
 using MyMicroservice.Responses;
+using MyMicroservice.Exceptions;
 
 namespace MyMicroservice.Controllers
 {
@@ -18,35 +19,96 @@ namespace MyMicroservice.Controllers
             this.mediator = mediator;
         }
 
-        [HttpGet]
-        public async Task<List<Sale>> GetSaleListAsync()
+        [HttpPost]
+        public async Task<Sale> AddSaleAsync(SaleDto sale)
         {
-            return await mediator.Send(new GetSaleListQuery());
+            try
+            {
+                return await mediator.Send(new CreateSaleCommand(sale));
+            }
+            catch (System.Exception)
+            {
+
+                throw new Exception("Err - Create Sale.");
+            }
         }
 
         [HttpGet("id")]
         public async Task<Sale> GetSaleByIdAsync(int id)
         {
-            return await mediator.Send(new GetSaleByIdQuery() { Id = id });
+            try
+            {
+                var result = await mediator.Send(new GetSaleByIdQuery() { Id = id });
+
+                if (result == null)
+                {
+                    throw new NotFoundException("Sale not found.");
+                }
+                return result;
+            }
+            catch (NotFoundException e)
+            {
+                throw e;
+            }
+            catch (System.Exception)
+            {
+                throw new Exception("Err Unknow - Get Sale by Id.");
+            }
         }
 
-        [HttpPost]
-        public async Task<Sale> AddSaleAsync(SaleDto sale)
+        [HttpGet]
+        public async Task<List<Sale>> GetSaleListAsync()
         {
-
-            return await mediator.Send(new CreateSaleCommand(sale));
+            try
+            {
+                var result = await mediator.Send(new GetSaleListQuery());
+                if (result.Count() == 0)
+                {
+                    throw new NotFoundException("Sales  not found.");
+                }
+                return result;
+            }
+            catch (NotFoundException e)
+            {
+                throw e;
+            }
+            catch (System.Exception)
+            {
+                throw new Exception("Err Unknow - Get Sales.");
+            }
         }
+
+
+
+
 
         [HttpPut]
         public async Task<int> UpdateSaleAsync(SaleUpdateDto sale)
         {
-            return await mediator.Send(new UpdateSaleCommand(sale));
+
+            try
+            {
+                return await mediator.Send(new UpdateSaleCommand(sale));
+            }
+            catch (System.Exception)
+            {
+
+                throw new Exception("Err - Update Sale");
+            }
         }
 
         [HttpDelete]
         public async Task<int> DeleteSaleAsync(int id)
         {
-            return await mediator.Send(new DeleteSaleCommand() { Id = id });
+
+            try
+            {
+                return await mediator.Send(new DeleteSaleCommand() { Id = id });
+            }
+            catch (System.Exception)
+            {
+                throw new Exception("Err - Delete Sale.");
+            }
         }
 
         [HttpGet("/sales-customer-by-date")]
@@ -54,12 +116,20 @@ namespace MyMicroservice.Controllers
         {
             try
             {
-                return await mediator.Send(new GetSaleByRangeWithCustomerQuery() { dateFrom = start, dateTo = end, age = age });
+                var result = await mediator.Send(new GetSaleByRangeWithCustomerQuery() { dateFrom = start, dateTo = end, age = age });
+                if (result.Count() == 0)
+                {
+                    throw new NotFoundException("Sales By Range not found.");
+                }
+                return result;
+            }
+            catch (NotFoundException e)
+            {
+                throw e;
             }
             catch (System.Exception)
             {
-
-                throw new Exception("Err Query - Get Sale By Range With Customer");
+                throw new Exception("Err Unknow - Get Sale By Range With Customer");
             }
         }
 
@@ -68,14 +138,21 @@ namespace MyMicroservice.Controllers
         {
             try
             {
-                return await mediator.Send(new GetAmountTotalProductQuery() { dateFrom = start, dateTo = end });
+                var result = await mediator.Send(new GetAmountTotalProductQuery() { dateFrom = start, dateTo = end });
+                if (result.Count() == 0)
+                {
+                    throw new NotFoundException("Amount Total Product ot found.");
+                }
+                return result;
+            }
+            catch (NotFoundException e)
+            {
+                throw e;
             }
             catch (System.Exception)
             {
-
-                throw new Exception("Err Query - Get Amount Total Product ");
+                throw new Exception("Err Unknow -  Get Amount Total Product");
             }
-
         }
 
         [HttpGet("/last-sale-by-customer/id")]
@@ -83,11 +160,21 @@ namespace MyMicroservice.Controllers
         {
             try
             {
-                return await mediator.Send(new GetLastSaleByCustomerQuery() { id = id });
+                var result = await mediator.Send(new GetLastSaleByCustomerQuery() { id = id });
+
+                if (result == null)
+                {
+                    throw new NotFoundException("Last Sale By Customer  not found.");
+                }
+                return result;
             }
-            catch (Exception e)
+            catch (NotFoundException e)
             {
-                throw new Exception("Err Query - Get Last Sale By Customer ");
+                throw e;
+            }
+            catch (System.Exception)
+            {
+                throw new Exception("Err Unknow - Get Last Sale By Customer ");
             }
         }
     }

@@ -49,14 +49,14 @@ namespace MyMicroservice.Repositories
             DateTime dtFrom = Convert.ToDateTime(dateFrom);
             DateTime dtTo = Convert.ToDateTime(dateTo);
             var result = await _dbContext.Sales
-            .Where(x => x.CreatedTimestamp >= dtFrom && x.CreatedTimestamp <= dtTo && x.Customer.age <= age)
+            .Where(x => x.CreatedTimestamp >= dtFrom && x.CreatedTimestamp <= dtTo && x.Customer.Age <= age)
             .GroupBy(x => x.Customer)
             .Select(x => new SaleByRangeWithCustomer()
             {
                 id = x.First().SaleId,
                 document = x.First().Customer.Document,
                 fullName = x.First().Customer.Name + " " + x.First().Customer.LastName,
-                age = x.First().Customer.age,
+                age = x.First().Customer.Age,
                 dateSale = x.First().CreatedTimestamp
             })
                 .OrderByDescending(x => x.age)

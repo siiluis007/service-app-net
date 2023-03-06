@@ -11,12 +11,14 @@ namespace MyMicroservice.Commands
         public string Name { get; set; }
         public string LastName { get; set; }
 
+        public int Age { get; set; }
+
         public CreateCustomerCommand(CustomerDto customer)
         {
             Document =customer.document;
             Name = customer.name;
             LastName = customer.lastName;
-            
+            Age = customer.age;
         }
     }
 }

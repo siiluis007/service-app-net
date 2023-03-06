@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  migrations:
+    build: 
+      context: .
+      dockerfile: Migrations.Dockerfile
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Aa123456!"
+      MSSQL_PID: "Express"
+    depends_on: 
+      - migrations
+     
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+        - "5171:80"
+    environment:
+        ASPNETCORE_ENVIRONMENT: "Development" 
+    depends_on: 
+      - migrations
+      - db         

@@ -22,16 +22,11 @@ namespace MyMicroservice.Repositories
             return result.Entity;
         }
 
-        public async Task<int> DeleteAsync(int Id)
-        {
-            var filteredData = _dbContext.Stocks.Where(x => x.StockId == Id).FirstOrDefault();
-            _dbContext.Stocks.Remove(filteredData);
-            return await _dbContext.SaveChangesAsync();
-        }
+
 
         public async Task<Stock> GetByIdAsync(int Id)
         {
-            return await _dbContext.Stocks.Where(x => x.StockId == Id).FirstOrDefaultAsync();
+            return await _dbContext.Stocks.Where(x => x.StockId == Id).Include(x => x.Product).FirstOrDefaultAsync();
         }
 
         public async Task<List<Stock>> GetListAsync()
@@ -41,24 +36,24 @@ namespace MyMicroservice.Repositories
 
         public async Task<List<StockByQuantity>> GetStockByQuantityAsync(int quantity)
         {
-            try
-            {
-                var result = await _dbContext.Stocks.Where(x => x.Quantity == quantity).Include(x =>x.Product)
-                .Select(x => new StockByQuantity (x.Product,x.Quantity))
-                .ToListAsync();
-                return result;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
 
+            var result = await _dbContext.Stocks.Where(x => x.Quantity == quantity).Include(x => x.Product)
+            .Select(x => new StockByQuantity(x.Product, x.Quantity))
+            .ToListAsync();
+            return result;
 
         }
 
         public async Task<int> UpdateAsync(Stock stock)
         {
             _dbContext.Stocks.Update(stock);
+            return await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteAsync(int Id)
+        {
+            var stock = _dbContext.Stocks.Where(x => x.StockId == Id).FirstOrDefault();
+            if (stock is not null) _dbContext.Stocks.Remove(stock);
             return await _dbContext.SaveChangesAsync();
         }
     }

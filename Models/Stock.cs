@@ -7,9 +7,8 @@ namespace MyMicroservice.Models
         public int StockId { get; set; }
         public int Quantity { get; set; }
         public double PurchasePrice {get;set;}
-        public DateTime CreatedTimestamp { get; set; }
-
         public int ProductId {get;set;}
-        public Product Product {get;set;}
+        public Product? Product {get;set;}
+        public DateTime CreatedTimestamp { get; set; }
     }
 }

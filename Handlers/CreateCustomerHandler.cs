@@ -17,15 +17,16 @@ namespace MyMicroservice.Handlers
         public async Task<Customer> Handle(CreateCustomerCommand command, CancellationToken cancellationToken)
         {
 
-            var stock = new Customer()
+            var customer = new Customer()
             {
                 Document = command.Document,
                 Name = command.Name,
                 LastName = command.LastName,
+                Age = command.Age,
                 CreatedTimestamp = DateTime.Now
             };
 
-            return await _customerRepository.AddAsync(stock);
+            return await _customerRepository.AddAsync(customer);
         }
     }
 }

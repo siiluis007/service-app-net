@@ -24,8 +24,8 @@ namespace MyMicroservice.Repositories
 
         public async Task<int> DeleteAsync(int Id)
         {
-            var filteredData = _dbContext.Customers.Where(x => x.CustomerId == Id).FirstOrDefault();
-            _dbContext.Customers.Remove(filteredData);
+            var customer = _dbContext.Customers.Where(x => x.CustomerId == Id).FirstOrDefault();
+            if (customer is not null) _dbContext.Customers.Remove(customer);
             return await _dbContext.SaveChangesAsync();
         }
 
@@ -33,15 +33,15 @@ namespace MyMicroservice.Repositories
         {
             return await _dbContext.Customers.Where(x => x.CustomerId == Id).FirstOrDefaultAsync();
         }
-/* 
+        /* 
+                public async Task<List<Customer>> GetListAsync()
+                {
+                    return await _dbContext.Customers.Take(100).ToListAsync();
+                }
+         */
         public async Task<List<Customer>> GetListAsync()
         {
-            return await _dbContext.Customers.Take(100).ToListAsync();
-        }
- */
-         public async Task<List<Customer>> GetListAsync()
-        {
-            return await _dbContext.Customers.Where(x=>x.age <=35).Take(100).ToListAsync();
+            return await _dbContext.Customers.Where(x => x.Age <= 35).Take(100).ToListAsync();
         }
 
         public async Task<int> UpdateAsync(Customer item)
